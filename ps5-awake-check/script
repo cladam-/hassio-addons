@@ -10,8 +10,8 @@ mosquitto_pub -h "$mqtthost" -p "$mqttport" -u "$username" -P "$password" -t hom
 
 STATUS=$(echo "SRCH * HTTP/1.1" | nc -u -w1 "$ps5ip" 9302 | head -1 | awk '{print $4}')
 
-if [ "$STATUS" = "Awake" ]; then
-  mosquitto_pub -h "$mqtthost" -p "$mqttport" -u "$username" -P "$password" -t homeassistant/binary_sensor/ps5mqtt/state -m "ON" 
-else
+if [ "$STATUS" = "Standby" ]; then
   mosquitto_pub -h "$mqtthost" -p "$mqttport" -u "$username" -P "$password" -t homeassistant/binary_sensor/ps5mqtt/state -m "OFF"
+else
+  mosquitto_pub -h "$mqtthost" -p "$mqttport" -u "$username" -P "$password" -t homeassistant/binary_sensor/ps5mqtt/state -m "ON" 
 fi
