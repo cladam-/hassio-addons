@@ -1,0 +1,20 @@
+name: Playstation 5 Status Checker
+version: "1.0.1"
+slug: ps5-mqtt-status
+description: Publishes ps5 status on mqtt
+url: "https://github.com/cladam-/hassio-addons/tree/main/ps5-awake-check"
+arch:
+  - amd64
+init: false
+options:
+  ps5ip: "192.168.1.xxx"
+  mqttuser: "ps5mqtt"
+  mqttpass: "ps5mqtt"
+  mqtthost: "192.168.1.xxx"
+  mqttport: 1883
+schema:
+  ps5ip: "str"
+  mqttuser: "str"
+  mqttpass: "str"
+  mqtthost: "str"
+  mqttport: "int"
