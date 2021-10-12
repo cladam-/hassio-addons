@@ -6,14 +6,18 @@ password=$(bashio::config "mqttpass")
 mqtthost=$(bashio::config "mqtthost")
 mqttport=$(bashio::config "mqttport")
 
-mosquitto_pub -h "$mqtthost" -p "$mqttport" -u "$username" -P "$password" -t homeassistant/binary_sensor/ps5mqtt/config -m "{\"name\":\"ps5mqtt\",\"state_topic\":\"homeassistant/binary_sensor/ps5mqtt/state\"}"
+status=$(echo "SRCH * HTTP/1.1" | nc -u -w1 "$ps5ip" 9302 | head -1 | awk '{print $2}')
 
-STATUS=$(echo "SRCH * HTTP/1.1" | nc -u -w1 "$ps5ip" 9302 | head -1 | awk '{print $2}')
-
-if [ "$STATUS" = "620" ]; then
-  mosquitto_pub -h "$mqtthost" -p "$mqttport" -u "$username" -P "$password" -t homeassistant/binary_sensor/ps5mqtt/state -m "OFF"
-elif [ "$STATUS" = "200" ]; then
-  mosquitto_pub -h "$mqtthost" -p "$mqttport" -u "$username" -P "$password" -t homeassistant/binary_sensor/ps5mqtt/state -m "ON" 
+if [ "$status" = "620" ]; then
+  message="OFF"
+elif [ "$status" = "200" ]; then
+  message="ON"
 else
-  mosquitto_pub -h "$mqtthost" -p "$mqttport" -u "$username" -P "$password" -t homeassistant/binary_sensor/ps5mqtt/state -m "OFF" 
+  message="OFF"
+fi
+
+previous_status=$(cat ./status)
+if [ "$previous_status" != "$message" ]; then
+  mosquitto_pub -h "$mqtthost" -p "$mqttport" -u "$username" -P "$password" -t homeassistant/binary_sensor/ps5mqtt/state -m "$message"
+  echo "$message" > ./status
 fi
