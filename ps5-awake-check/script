@@ -15,7 +15,7 @@ elif [ "$status" = "200" ]; then
 fi
 
 previous_status=$(cat ./status)
-if [ "$previous_status" != "$message" ]; then
+if [ ! -z $message ] && [ "$previous_status" != "$message" ]; then
   echo $message
   mosquitto_pub -h "$mqtthost" -p "$mqttport" -u "$username" -P "$password" -t homeassistant/binary_sensor/ps5mqtt/state -m "$message"
   echo "$message" > ./status
