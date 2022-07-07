@@ -1,0 +1,12 @@
+name: Onkyo EISCP Commands
+version: '1.0.0'
+slug: onkyo-eiscp-commands
+description: Send raw commands to onkyo
+url: 'https://github.com/cladam-/hassio-addons/tree/main/onkyo-commands'
+arch:
+  - amd64
+init: false
+options:
+  onkyoip: '192.168.1.xxx'
+schema:
+  onkyoip: 'str'
