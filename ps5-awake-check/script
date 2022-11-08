@@ -10,7 +10,7 @@ status=$(echo "SRCH * HTTP/1.1" | nc -u -w4 "$ps5ip" 9302 | head -1 | awk '{prin
 
 previous_status=$(cat ./status)
 
-message=previous_status
+message=$previous_status
 
 if [ "$status" = "620" ]; then
   message="OFF"
