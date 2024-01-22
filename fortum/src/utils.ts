@@ -48,9 +48,13 @@ export async function login() {
 export async function getConsumption(token: string) {
   const customer = safeParseInt(process.env.CUSTOMER);
   const point = safeParseInt(process.env.POINT);
+  const now = Date.now();
+  const week = 1000 * 60 * 60 * 24 * 7;
+  const to = new Date(now).toISOString().slice(0, 10);
+  const from = new Date(now - week).toISOString().slice(0, 10);
   const body = {
-    from: "2024-01-18",
-    to: "2024-01-22",
+    from,
+    to,
     resolution: "hourly",
     postalAddress: process.env.POSTAL_ADDRESS,
     postOffice: process.env.POST_OFFICE,
