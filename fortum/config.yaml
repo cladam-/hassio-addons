@@ -1,0 +1,22 @@
+name: Fortum Energy Usage
+version: '1.0.0'
+slug: fortum-energy-usage
+description: Reads energy usage from Fortum
+url: 'https://github.com/cladam-/hassio-addons/tree/main/fortum'
+arch:
+  - amd64
+init: false
+options:
+  email: 'user@email.com'
+  password: '-'
+  customer: 0000
+  point: 0000
+  address: 'Street 12'
+  city: 'City'
+schema:
+  email: 'str'
+  password: 'str'
+  customer: 'int'
+  point: 'int'
+  address: 'str'
+  city: 'str'
