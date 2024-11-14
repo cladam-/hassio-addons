@@ -1,5 +1,5 @@
 name: Playstation 5 Status Checker
-version: "2.0.1"
+version: "2.0.2"
 slug: ps5-mqtt-status
 description: Publishes ps5 status on mqtt
 url: "https://github.com/cladam-/hassio-addons/tree/main/ps5-awake-check"
