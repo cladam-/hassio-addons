@@ -6,4 +6,5 @@ password=$(bashio::config "mqttpass")
 mqtthost=$(bashio::config "mqtthost")
 mqttport=$(bashio::config "mqttport")
 
+echo RUN
 ./ps5.py $ps5ip $mqtthost $mqttport $username $password
