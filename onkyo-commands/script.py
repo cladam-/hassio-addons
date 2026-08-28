@@ -1,28 +1,72 @@
 #!/usr/bin/python3
 
 import sys
+import logging
+import time
 
 import eiscp
 import paho.mqtt.client as mqtt
 
-print("Starting client")
+logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+log = logging.getLogger("onkyo-commander")
 
-onkyo_host = sys.argv[1]
-mqtt_host = sys.argv[2]
+DEFAULT_ONKYO_HOST = "192.168.1.xxx"
+DEFAULT_MQTT_HOST = "core-mosquitto"
+DEFAULT_MQTT_USER = ""
+DEFAULT_MQTT_PASS = ""
+DEFAULT_TOPIC = "onkyo/command"
 
-def on_message(client, userdata, message):
-    print("message received " ,str(message.payload.decode("utf-8")))
+
+def main():
+    args = sys.argv[1:] + [""] * 5
+    onkyo_host = args[0] or DEFAULT_ONKYO_HOST
+    mqtt_host = args[1] or DEFAULT_MQTT_HOST
+    mqtt_user = args[2] or DEFAULT_MQTT_USER
+    mqtt_pass = args[3] or DEFAULT_MQTT_PASS
+    topic = args[4] or DEFAULT_TOPIC
+
+    if not onkyo_host or onkyo_host == "192.168.1.xxx":
+        log.error("No onkyoip configured; set the 'onkyoip' add-on option.")
+        sys.exit(1)
+
     receiver = eiscp.eISCP(onkyo_host)
-    receiver.command(str(message.payload.decode("utf-8")))
-    receiver.disconnect()
+    client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="onkyo-commander")
+    client.username_pw_set(mqtt_user, mqtt_pass) if mqtt_user else None
 
-client = mqtt.Client("onkyo-commander")
+    def on_message(client, userdata, message):
+        try:
+            command = message.payload.decode("utf-8").strip()
+        except UnicodeDecodeError:
+            log.error("Ignoring non-UTF-8 payload from %s", message.topic)
+            return
+        if not command:
+            log.warning("Ignoring empty command")
+            return
+        log.info("Sending command %r to receiver", command)
+        try:
+            receiver.command(command)
+        except Exception as exc:
+            log.error("Failed to send %r: %s", command, exc)
+            log.info("Reconnecting to receiver...")
+            try:
+                receiver.disconnect()
+                receiver.command(command)
+                log.info("Retry succeeded")
+            except Exception as retry_exc:
+                log.error("Retry failed for %r: %s", command, retry_exc)
 
-client.on_message=on_message
+    client.on_message = on_message
+    client.connect(host=mqtt_host)
 
-client.username_pw_set("onkyo", "onkyo")
-client.connect(host=mqtt_host)
+    log.info("Subscribing to %s", topic)
+    client.subscribe(topic)
 
-client.subscribe('onkyo/command')
+    try:
+        client.loop_forever()
+    except KeyboardInterrupt:
+        log.info("Shutting down")
+        receiver.disconnect()
 
-client.loop_forever()
+
+if __name__ == "__main__":
+    main()

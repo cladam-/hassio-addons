@@ -1,5 +1,5 @@
 name: Onkyo EISCP Commands
-version: '1.0.2'
+version: '1.1.0'
 slug: onkyo-eiscp-commands
 description: Send raw commands to onkyo
 url: 'https://github.com/cladam-/hassio-addons/tree/main/onkyo-commands'
@@ -9,6 +9,12 @@ init: false
 options:
   onkyoip: '192.168.1.xxx'
   mqttip: 'core-mosquitto'
+  mqttusername: 'onkyo'
+  mqttpassword: 'onkyo'
+  mqtttopic: 'onkyo/command'
 schema:
   onkyoip: 'str'
   mqttip: 'str'
+  mqttusername: 'str'
+  mqttpassword: 'str'
+  mqtttopic: 'str'
