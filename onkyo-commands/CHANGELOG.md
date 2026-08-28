@@ -1,3 +1,8 @@
+## v1.1.2 [2026-08-28]
+
+- Fix Docker build failing outside the HA builder: default BUILD_FROM, handle PEP 668
+  externally-managed-environment when installing pip packages
+
 ## v1.1.1 [2026-08-28]
 
 - Remove unused import
