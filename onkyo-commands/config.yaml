@@ -1,5 +1,5 @@
 name: Onkyo EISCP Commands
-version: '1.1.0'
+version: '1.1.1'
 slug: onkyo-eiscp-commands
 description: Send raw commands to onkyo
 url: 'https://github.com/cladam-/hassio-addons/tree/main/onkyo-commands'

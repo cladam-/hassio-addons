@@ -1,3 +1,8 @@
+## v1.1.1 [2026-08-28]
+
+- Remove unused import
+- Retry MQTT connection at startup instead of crashing if broker is not yet available
+
 ## v1.1.0 [2026-08-28]
 
 - Fix misspelled changelog filename (CHANGELONG -> CHANGELOG)

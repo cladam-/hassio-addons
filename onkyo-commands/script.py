@@ -15,6 +15,7 @@ DEFAULT_MQTT_HOST = "core-mosquitto"
 DEFAULT_MQTT_USER = ""
 DEFAULT_MQTT_PASS = ""
 DEFAULT_TOPIC = "onkyo/command"
+MQTT_RETRY_SECONDS = 5
 
 
 def main():
@@ -31,7 +32,8 @@ def main():
 
     receiver = eiscp.eISCP(onkyo_host)
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2, client_id="onkyo-commander")
-    client.username_pw_set(mqtt_user, mqtt_pass) if mqtt_user else None
+    if mqtt_user:
+        client.username_pw_set(mqtt_user, mqtt_pass)
 
     def on_message(client, userdata, message):
         try:
@@ -56,7 +58,13 @@ def main():
                 log.error("Retry failed for %r: %s", command, retry_exc)
 
     client.on_message = on_message
-    client.connect(host=mqtt_host)
+    while True:
+        try:
+            client.connect(host=mqtt_host)
+            break
+        except Exception as exc:
+            log.error("MQTT connect to %s failed: %s (retrying in %ss)", mqtt_host, exc, MQTT_RETRY_SECONDS)
+            time.sleep(MQTT_RETRY_SECONDS)
 
     log.info("Subscribing to %s", topic)
     client.subscribe(topic)
